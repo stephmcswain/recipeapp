@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Recipe App</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #f5f7fa;
+  --card: #ffffff;
+  --accent: #a7b8c9;
+  --accent-soft: #e6ecf2;
+  --text: #2f3542;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  background: var(--bg);
+}
+
+header {
+  padding: 16px;
+  background: white;
+  position: sticky;
+  top: 0;
+}
+
+h1 {
+  margin: 0 0 10px;
+}
+
+.controls {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+input, button {
+  padding: 10px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+}
+
+button {
+  background: var(--accent);
+  color: white;
+  border: none;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 14px;
+  padding: 16px;
+}
+
+.card {
+  background: var(--card);
+  padding: 14px;
+  border-radius: 18px;
+  cursor: pointer;
+}
+
+.card img {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.tag {
+  display: inline-block;
+  background: var(--accent-soft);
+  padding: 4px 10px;
+  margin: 2px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  width: 500px;
+  max-height: 85%;
+  overflow-y: auto;
+  border-radius: 20px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🍽️ My Recipes</h1>
+
+  <div class="controls">
+    <input id="search" placeholder="Search...">
+    <button onclick="showAddRecipe()">➕ Add</button>
+    <button onclick="saveToFile()">💾 Save File</button>
+    <button onclick="document.getElementById('importFile').click()">📂 Import</button>
+    <input type="file" id="importFile" style="display:none" onchange="importRecipes(event)">
+  </div>
+</header>
+
+<div id="recipes" class="grid"></div>
+
+<div class="modal" id="modal">
+  <div class="modal-content" id="modalContent"></div>
+</div>
+
+<script>
+
+let recipes = [];
+
+// ===== IMPORT RECIPES FILE =====
+function importRecipes(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    try {
+      const imported = JSON.parse(e.target.result);
+
+      // Merge logic
+      imported.forEach(newRecipe => {
+        const exists = recipes.some(r => r.number === newRecipe.number);
+
+        if (!exists) {
+          recipes.push(newRecipe);
+        } else {
+          // Optional: update existing recipe
+          const index = recipes.findIndex(r => r.number === newRecipe.number);
+          recipes[index] = newRecipe;
+        }
+      });
+
+      render();
+
+      alert("Recipes imported & merged successfully!");
+
+    } catch (err) {
+      alert("Invalid file!");
+    }
+  };
+
+  reader.readAsText(file);
+}
+
+// ===== LOAD FILE =====
+fetch("recipes.json")
+  .then(res => res.json())
+  .then(data => {
+    recipes = data;
+    render();
+  })
+  .catch(() => {
+    console.log("Couldn't load file — using empty list");
+    recipes = [];
+    render();
+  });
+
+// ===== RENDER =====
+function render() {
+  let search = document.getElementById("search").value.toLowerCase();
+
+  let filtered = recipes.filter(r =>
+    r.name.toLowerCase().includes(search)
+  );
+
+  let container = document.getElementById("recipes");
+  container.innerHTML = "";
+
+  filtered.forEach(r => {
+    let div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      ${r.image ? `<img src="${r.image}">` : ""}
+      <strong>${r.name}</strong>
+      <div>${(r.tags || []).map(t => `<span class="tag">${t}</span>`).join("")}</div>
+      <div>🔥 ${r.calories || 0} | 💪 ${r.protein || 0}g</div>
+    `;
+
+    div.onclick = () => openRecipe(r.number);
+    container.appendChild(div);
+  });
+}
+
+// ===== OPEN RECIPE =====
+function openRecipe(id) {
+  const r = recipes.find(x => x.number === id);
+
+  const content = document.getElementById("modalContent");
+
+  content.innerHTML = `
+    <h2>${r.name}</h2>
+
+    ${r.image ? `<img src="${r.image}" style="width:100%; border-radius:12px;">` : ""}
+
+    <button onclick="editRecipe(${r.number})">✏️ Edit</button>
+    <button onclick="deleteRecipe(${r.number})">🗑 Delete</button>
+
+    <h3>Ingredients</h3>
+    <ul>${r.ingredients.map(i => `<li>${i}</li>`).join("")}</ul>
+
+    <h3>Instructions</h3>
+    <p>${r.instructions}</p>
+  `;
+
+  document.getElementById("modal").style.display = "flex";
+}
+
+// ===== ADD =====
+function showAddRecipe() {
+  const content = document.getElementById("modalContent");
+
+  content.innerHTML = `
+    <h2>Add Recipe</h2>
+
+    <input id="newName" placeholder="Name"><br><br>
+    <input id="newTags" placeholder="Tags"><br><br>
+
+    <textarea id="newIngredients" rows="5" placeholder="Ingredients"></textarea><br><br>
+    <textarea id="newInstructions" rows="5" placeholder="Instructions"></textarea><br><br>
+
+    <input id="newCalories" placeholder="Calories"><br><br>
+    <input id="newProtein" placeholder="Protein"><br><br>
+
+    <input type="file" id="newImage"><br><br>
+
+    <button onclick="saveRecipe()">Save</button>
+  `;
+
+  document.getElementById("modal").style.display = "flex";
+}
+
+// ===== SAVE NEW =====
+function saveRecipe() {
+  const name = document.getElementById("newName").value;
+
+  const newRecipe = {
+    number: Date.now(),
+    name,
+    tags: document.getElementById("newTags").value.split(","),
+    ingredients: document.getElementById("newIngredients").value.split("\n"),
+    instructions: document.getElementById("newInstructions").value,
+    calories: parseInt(document.getElementById("newCalories").value) || 0,
+    protein: parseInt(document.getElementById("newProtein").value) || 0,
+    image: ""
+  };
+
+  const file = document.getElementById("newImage").files[0];
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => {
+      newRecipe.image = e.target.result;
+      recipes.push(newRecipe);
+      render();
+    };
+    reader.readAsDataURL(file);
+  } else {
+    recipes.push(newRecipe);
+    render();
+  }
+
+  document.getElementById("modal").style.display = "none";
+}
+
+// ===== EDIT =====
+function editRecipe(id) {
+  const r = recipes.find(x => x.number === id);
+
+  const content = document.getElementById("modalContent");
+
+  content.innerHTML = `
+    <h2>Edit</h2>
+
+    <input id="editName" value="${r.name}"><br><br>
+    <textarea id="editIngredients">${r.ingredients.join("\n")}</textarea><br><br>
+    <textarea id="editInstructions">${r.instructions}</textarea><br><br>
+
+    <button onclick="saveEdit(${id})">Save</button>
+  `;
+}
+
+// ===== SAVE EDIT =====
+function saveEdit(id) {
+  const r = recipes.find(x => x.number === id);
+
+  r.name = document.getElementById("editName").value;
+  r.ingredients = document.getElementById("editIngredients").value.split("\n");
+  r.instructions = document.getElementById("editInstructions").value;
+
+  render();
+  document.getElementById("modal").style.display = "none";
+}
+
+// ===== DELETE =====
+function deleteRecipe(id) {
+  recipes = recipes.filter(r => r.number !== id);
+  render();
+  document.getElementById("modal").style.display = "none";
+}
+
+// ===== SAVE FILE =====
+function saveToFile() {
+  const blob = new Blob([JSON.stringify(recipes, null, 2)], {type: "application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "recipes.json";
+  a.click();
+}
+
+// ===== EVENTS =====
+document.getElementById("search").oninput = render;
+
+document.getElementById("modal").onclick = () => {
+  document.getElementById("modal").style.display = "none";
+};
+
+</script>
+
+</body>
+</html>
