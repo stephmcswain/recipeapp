@@ -40,6 +40,8 @@ h1 {
   flex-wrap: wrap;
 }
 
+<button onclick="setToken()">🔑 Connect GitHub</button>
+
 input, button {
   padding: 10px;
   border-radius: 12px;
@@ -111,7 +113,7 @@ button {
   <div class="controls">
     <input id="search" placeholder="Search...">
     <button onclick="showAddRecipe()">➕ Add</button>
-    <button onclick="saveToFile()">💾 Save File</button>
+    <button onclick="saveToGitHub()">☁️ Save</button>
     <button onclick="document.getElementById('importFile').click()">📂 Import</button>
     <input type="file" id="importFile" style="display:none" onchange="importRecipes(event)">
   </div>
@@ -321,12 +323,47 @@ function deleteRecipe(id) {
 }
 
 // ===== SAVE FILE =====
-function saveToFile() {
-  const blob = new Blob([JSON.stringify(recipes, null, 2)], {type: "application/json"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "recipes.json";
-  a.click();
+async function saveToGitHub() {
+  if (!GITHUB_TOKEN) {
+    alert("Set your GitHub token first!");
+    return;
+  }
+
+  const repo = "YOUR_USERNAME/YOUR_REPO";
+  const path = "recipes.json";
+
+  const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+  // Get current file SHA
+  const getFile = await fetch(url, {
+    headers: {
+      Authorization: `token ${GITHUB_TOKEN}`
+    }
+  });
+
+  const fileData = await getFile.json();
+
+  const updatedContent = btoa(JSON.stringify(recipes, null, 2));
+
+  // Push update
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      Authorization: `token ${GITHUB_TOKEN}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      message: "Update recipes",
+      content: updatedContent,
+      sha: fileData.sha
+    })
+  });
+
+  if (response.ok) {
+    alert("Saved to GitHub!");
+  } else {
+    alert("Error saving.");
+  }
 }
 
 // ===== EVENTS =====
