@@ -100,6 +100,20 @@ export function initAuthModal() {
     if (event.target && event.target.id === "authModal") closeLoginModal();
   });
 
+  document.addEventListener("keydown", (event) => {
+    const modalVisible = modal.style.display === "flex";
+    if (event.key === "Escape" && modalVisible) {
+      closeLoginModal();
+      return;
+    }
+
+    const loginShortcut = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "l";
+    if (loginShortcut && !isAuthenticated()) {
+      event.preventDefault();
+      openLoginModal();
+    }
+  });
+
   authModalInitialized = true;
 }
 
