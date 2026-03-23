@@ -72,8 +72,12 @@ if (Array.isArray(r.ingredients) && r.ingredients.length > 0) {
     <p style="white-space: pre-line;">${r.instructions || ""}</p>
 
     <div style="margin-top:10px;">
-      <button onclick="editRecipe(${r.number})">✏️ Edit</button>
-      <button onclick="deleteRecipe(${r.number})">🗑 Delete</button>
+      ${
+        isAuthenticated()
+          ? `<button onclick="editRecipe(${r.number})">✏️ Edit</button>
+      <button onclick="deleteRecipe(${r.number})">🗑 Delete</button>`
+          : ""
+      }
     </div>
   `;
 
@@ -133,6 +137,11 @@ export function showAddRecipe() {
 }
 
 export function editRecipe(id) {
+  if (!isAuthenticated()) {
+    window.alert("Please log in to edit recipes.");
+    return;
+  }
+
   const r = recipes.find(x => x.number === id);
   setCurrentTags([...(r?.tags || [])]);
   renderTags();
@@ -226,6 +235,11 @@ export function editRecipe(id) {
 }
 
 export function saveEdit(id) {
+  if (!isAuthenticated()) {
+    window.alert("Please log in to edit recipes.");
+    return;
+  }
+
   const index = recipes.findIndex(r => r.number === id);
   if (index === -1) return;
 
@@ -349,6 +363,11 @@ export function saveRecipe() {
 }
 
 export function deleteRecipe(id) {
+  if (!isAuthenticated()) {
+    window.alert("Please log in to delete recipes.");
+    return;
+  }
+
   const filtered = recipes.filter(r => r.number !== id);
   recipes.length = 0;
   recipes.push(...filtered);

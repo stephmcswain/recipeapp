@@ -36,9 +36,18 @@ window.importRecipes = (event) => {
 };
 window.closeModal = closeModal;
 window.saveRecipe = saveRecipe;
-window.deleteRecipe = deleteRecipe;
-window.editRecipe = editRecipe;
-window.saveEdit = saveEdit;
+window.deleteRecipe = (id) => {
+  if (!requireAuth()) return;
+  deleteRecipe(id);
+};
+window.editRecipe = (id) => {
+  if (!requireAuth()) return;
+  editRecipe(id);
+};
+window.saveEdit = (id) => {
+  if (!requireAuth()) return;
+  saveEdit(id);
+};
 window.addTag = addTag;
 window.removeTag = removeTag;
 window.addSection = addSection;
