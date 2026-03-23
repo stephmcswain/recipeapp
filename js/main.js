@@ -6,12 +6,14 @@ import { recipes } from "./state.js";
 import { populateTags, addTag, removeTag } from "./tags.js";
 import { addSection, addIngredient } from "./ingredients.js";
 import { showAddRecipe, closeModal, saveRecipe, deleteRecipe, editRecipe, saveEdit } from "./modal.js";
+import { login, logout, requireAuth, updateAuthUI } from "./auth.js";
 
 window.onload = () => {
   loadRecipes();
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  updateAuthUI();
   loadRecipes();
 
   document.getElementById("search").oninput = render;
@@ -20,9 +22,18 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Expose handlers used by inline HTML onclick attributes.
-window.showAddRecipe = showAddRecipe;
+window.showAddRecipe = () => {
+  if (!requireAuth()) return;
+  showAddRecipe();
+};
 window.saveToFile = exportToFile;
-window.importRecipes = importRecipes;
+window.importRecipes = (event) => {
+  if (!requireAuth()) {
+    if (event?.target) event.target.value = "";
+    return;
+  }
+  importRecipes(event);
+};
 window.closeModal = closeModal;
 window.saveRecipe = saveRecipe;
 window.deleteRecipe = deleteRecipe;
@@ -32,6 +43,8 @@ window.addTag = addTag;
 window.removeTag = removeTag;
 window.addSection = addSection;
 window.addIngredient = addIngredient;
+window.login = login;
+window.logout = logout;
 
 // IMPORT + MERGE
 export function importRecipes(event) {

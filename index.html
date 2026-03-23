@@ -36,10 +36,12 @@
       <option value="all">All Tags</option>
     </select>
 
-    <button onclick="showAddRecipe()">➕ Add a new recipe</button>
+    <button data-auth-required="true" onclick="showAddRecipe()">➕ Add a new recipe</button>
     <button onclick="saveToFile()">💾 Export Recipes</button>
-    <button onclick="document.getElementById('importFile').click()">📂 Import Recipes</button>
+    <button data-auth-required="true" onclick="document.getElementById('importFile').click()">📂 Import Recipes</button>
     <input type="file" id="importFile" style="display:none" onchange="importRecipes(event)">
+    <button id="loginBtn" onclick="login()">🔐 Login</button>
+    <button id="logoutBtn" onclick="logout()" style="display:none">🚪 Logout</button>
   </div>
 </header>
 

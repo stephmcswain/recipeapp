@@ -3,6 +3,7 @@ import { render } from "./render.js";
 import { currentTags, populateTags, renderTags, setCurrentTags } from "./tags.js";
 import { addSection, collectIngredients } from "./ingredients.js";
 import { upsertRecipe, deleteRecipeDb, persistRecipesLocal } from "./data.js";
+import { isAuthenticated } from "./auth.js";
 
 function ingredientsToEditText(ingredients) {
   if (!Array.isArray(ingredients) || ingredients.length === 0) return "";
@@ -281,6 +282,11 @@ export function saveEdit(id) {
 
 // SAVE NEW
 export function saveRecipe() {
+  if (!isAuthenticated()) {
+    window.alert("Please log in to add recipes.");
+    return;
+  }
+
   const numberValue = (id) => {
     const el = document.getElementById(id);
     if (!el) return 0;

@@ -30,5 +30,13 @@ After deploy, the frontend will automatically:
 
 - The API endpoint is `/.netlify/functions/recipes`.
 - If you open `recipes-app/index.html` directly from Finder (file://), browser fetches may be blocked; serve it with a local server or Netlify Dev for best results.
+
+## 5) Access control for add/import
+
+- The UI now requires login for **Add a new recipe** and **Import Recipes**.
+- Default credentials are set in `js/auth.js`:
+  - Username: `admin`
+  - Password: `recipes123`
+- Change these values before deploying publicly.
 # recipeapp
 Browse and search for my favorite recipes.
