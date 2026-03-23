@@ -18,7 +18,7 @@ In your Netlify site settings, add:
 
 This repo includes:
 
-- `netlify.toml` (publishes `recipes-app/`, functions in `netlify/functions/`)
+- `netlify.toml` (publishes `.`, functions in `netlify/functions/`)
 - `netlify/functions/recipes.js` (GET/POST/PUT/DELETE recipes)
 
 After deploy, the frontend will automatically:
@@ -31,12 +31,16 @@ After deploy, the frontend will automatically:
 - The API endpoint is `/.netlify/functions/recipes`.
 - If you open `recipes-app/index.html` directly from Finder (file://), browser fetches may be blocked; serve it with a local server or Netlify Dev for best results.
 
-## 5) Access control for add/import
+## 5) Access control for write actions
 
-- The UI now requires login for **Add a new recipe** and **Import Recipes**.
-- Default credentials are set in `js/auth.js`:
+- The UI now requires login for **Add**, **Import**, **Edit**, and **Delete**.
+- The API also enforces auth on write methods (`POST`, `PUT`, `DELETE`).
+- Configure Netlify env vars for API auth:
+  - `RECIPE_ADMIN_USERNAME`
+  - `RECIPE_ADMIN_PASSWORD`
+- If those env vars are missing, the API defaults to:
   - Username: `admin`
   - Password: `recipes123`
-- Change these values before deploying publicly.
+- Login in the app sends a Basic auth header used by the API.
 # recipeapp
 Browse and search for my favorite recipes.

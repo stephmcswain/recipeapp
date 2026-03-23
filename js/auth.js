@@ -1,24 +1,30 @@
-const AUTH_STORAGE_KEY = "recipes-authenticated";
+const AUTH_STORAGE_KEY = "recipes-auth-token";
 
-// Frontend-only guard for basic access control.
-// Update these to your own credentials.
-const AUTH_USERNAME = "admin";
-const AUTH_PASSWORD = "recipes123";
-
-function setAuthenticated(value) {
+function setAuthToken(token) {
   try {
-    localStorage.setItem(AUTH_STORAGE_KEY, value ? "true" : "false");
+    if (token) localStorage.setItem(AUTH_STORAGE_KEY, token);
+    else localStorage.removeItem(AUTH_STORAGE_KEY);
   } catch {
     // Ignore localStorage issues.
   }
 }
 
-export function isAuthenticated() {
+function getAuthToken() {
   try {
-    return localStorage.getItem(AUTH_STORAGE_KEY) === "true";
+    return localStorage.getItem(AUTH_STORAGE_KEY) || "";
   } catch {
-    return false;
+    return "";
   }
+}
+
+export function isAuthenticated() {
+  return Boolean(getAuthToken());
+}
+
+export function getAuthHeaders() {
+  const token = getAuthToken();
+  if (!token) return {};
+  return { authorization: `Basic ${token}` };
 }
 
 export function updateAuthUI() {
@@ -41,18 +47,14 @@ export function login() {
   const password = window.prompt("Password:");
   if (password === null) return false;
 
-  if (username === AUTH_USERNAME && password === AUTH_PASSWORD) {
-    setAuthenticated(true);
-    updateAuthUI();
-    return true;
-  }
-
-  window.alert("Invalid username or password.");
-  return false;
+  const token = window.btoa(`${username}:${password}`);
+  setAuthToken(token);
+  updateAuthUI();
+  return true;
 }
 
 export function logout() {
-  setAuthenticated(false);
+  setAuthToken("");
   updateAuthUI();
 }
 

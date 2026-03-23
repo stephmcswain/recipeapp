@@ -1,6 +1,7 @@
 import { recipes } from "./state.js";
 import { populateTags } from "./tags.js";
 import { render } from "./render.js";
+import { getAuthHeaders } from "./auth.js";
 
 const API_URL = "/.netlify/functions/recipes";
 const LOCAL_RECIPES_KEY = "recipes-local";
@@ -41,7 +42,10 @@ export async function loadRecipes() {
         seedRecipes.map(recipe =>
           fetch(API_URL, {
             method: "POST",
-            headers: { "content-type": "application/json" },
+            headers: {
+              "content-type": "application/json",
+              ...getAuthHeaders(),
+            },
             body: JSON.stringify(recipe),
           }).catch(() => null)
         )
@@ -89,7 +93,10 @@ export async function loadRecipes() {
 export async function upsertRecipe(recipe) {
   const res = await fetch(API_URL, {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: {
+      "content-type": "application/json",
+      ...getAuthHeaders(),
+    },
     body: JSON.stringify(recipe),
   });
   if (!res.ok) throw new Error(`Save failed: ${res.status}`);
@@ -99,6 +106,9 @@ export async function upsertRecipe(recipe) {
 export async function deleteRecipeDb(id) {
   const res = await fetch(`${API_URL}/${encodeURIComponent(id)}`, {
     method: "DELETE",
+    headers: {
+      ...getAuthHeaders(),
+    },
   });
   if (!res.ok && res.status !== 204) throw new Error(`Delete failed: ${res.status}`);
 }

@@ -272,25 +272,41 @@ export function saveEdit(id) {
   if (file) {
     const reader = new FileReader();
     reader.onload = async e => {
-      updated.image = e.target.result;
-      const saved = await upsertRecipe(updated);
-      recipes[index] = saved;
-      persistRecipesLocal();
-      populateTags();
-      render();
-      closeModal();
+      try {
+        updated.image = e.target.result;
+        const saved = await upsertRecipe(updated);
+        recipes[index] = saved;
+        persistRecipesLocal();
+        populateTags();
+        render();
+        closeModal();
+      } catch (error) {
+        if (String(error?.message || "").includes("401")) {
+          window.alert("Unauthorized. Please log in with valid credentials.");
+          return;
+        }
+        window.alert("Save failed. Please try again.");
+      }
     };
     reader.readAsDataURL(file);
     return;
   }
 
   (async () => {
-    const saved = await upsertRecipe(updated);
-    recipes[index] = saved;
-    persistRecipesLocal();
-    populateTags();
-    render();
-    closeModal();
+    try {
+      const saved = await upsertRecipe(updated);
+      recipes[index] = saved;
+      persistRecipesLocal();
+      populateTags();
+      render();
+      closeModal();
+    } catch (error) {
+      if (String(error?.message || "").includes("401")) {
+        window.alert("Unauthorized. Please log in with valid credentials.");
+        return;
+      }
+      window.alert("Save failed. Please try again.");
+    }
   })();
 }
 
@@ -342,8 +358,12 @@ export function saveRecipe() {
     try {
       const saved = await upsertRecipe(recipe);
       mergeSavedRecipe(saved);
-    } catch {
-      // Keep local UX working even if API/database is unavailable.
+    } catch (error) {
+      if (String(error?.message || "").includes("401")) {
+        window.alert("Unauthorized. Please log in with valid credentials.");
+        return;
+      }
+      // Keep local UX working for offline/unavailable API.
       mergeSavedRecipe(recipe);
     }
   };
@@ -362,9 +382,20 @@ export function saveRecipe() {
   }
 }
 
-export function deleteRecipe(id) {
+export async function deleteRecipe(id) {
   if (!isAuthenticated()) {
     window.alert("Please log in to delete recipes.");
+    return;
+  }
+
+  try {
+    await deleteRecipeDb(id);
+  } catch (error) {
+    if (String(error?.message || "").includes("401")) {
+      window.alert("Unauthorized. Please log in with valid credentials.");
+      return;
+    }
+    window.alert("Delete failed. Please try again.");
     return;
   }
 
@@ -372,7 +403,6 @@ export function deleteRecipe(id) {
   recipes.length = 0;
   recipes.push(...filtered);
   persistRecipesLocal();
-  deleteRecipeDb(id).catch(() => {});
   populateTags();
   render();
   closeModal();

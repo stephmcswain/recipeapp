@@ -7,7 +7,7 @@ function json(statusCode, body, extraHeaders = {}) {
       "content-type": "application/json; charset=utf-8",
       "access-control-allow-origin": "*",
       "access-control-allow-methods": "GET,POST,PUT,DELETE,OPTIONS",
-      "access-control-allow-headers": "content-type",
+      "access-control-allow-headers": "content-type,authorization",
       ...extraHeaders,
     },
     body: JSON.stringify(body),
@@ -58,6 +58,39 @@ function toClientRecipe(row) {
   };
 }
 
+function isWriteMethod(method) {
+  return method === "POST" || method === "PUT" || method === "DELETE";
+}
+
+function getHeader(event, name) {
+  const headers = event.headers || {};
+  return headers[name] || headers[name.toLowerCase()] || "";
+}
+
+function isAuthorized(event) {
+  const header = getHeader(event, "authorization");
+  if (!header || !header.startsWith("Basic ")) return false;
+
+  const token = header.slice("Basic ".length).trim();
+  if (!token) return false;
+
+  let decoded = "";
+  try {
+    decoded = Buffer.from(token, "base64").toString("utf8");
+  } catch {
+    return false;
+  }
+
+  const splitAt = decoded.indexOf(":");
+  if (splitAt < 0) return false;
+  const username = decoded.slice(0, splitAt);
+  const password = decoded.slice(splitAt + 1);
+
+  const expectedUsername = process.env.RECIPE_ADMIN_USERNAME || "admin";
+  const expectedPassword = process.env.RECIPE_ADMIN_PASSWORD || "recipes123";
+  return username === expectedUsername && password === expectedPassword;
+}
+
 async function withClient(fn) {
   const connectionString = process.env.NETLIFY_DATABASE_URL;
   if (!connectionString) {
@@ -83,6 +116,9 @@ export async function handler(event) {
   ).toUpperCase();
 
   if (method === "OPTIONS") return json(204, {});
+  if (isWriteMethod(method) && !isAuthorized(event)) {
+    return json(401, { error: "Unauthorized" });
+  }
 
   return withClient(async (client) => {
     const base = "/.netlify/functions/recipes";
