@@ -1,4 +1,5 @@
 const AUTH_STORAGE_KEY = "recipes-auth-token";
+let authModalInitialized = false;
 
 function setAuthToken(token) {
   try {
@@ -40,21 +41,76 @@ export function updateAuthUI() {
   if (logoutBtn) logoutBtn.style.display = loggedIn ? "" : "none";
 }
 
-export function login() {
-  const username = window.prompt("Username:");
-  if (username === null) return false;
+function getAuthModalElements() {
+  return {
+    modal: document.getElementById("authModal"),
+    form: document.getElementById("authForm"),
+    username: document.getElementById("authUsername"),
+    password: document.getElementById("authPassword"),
+    togglePassword: document.getElementById("authTogglePassword"),
+    error: document.getElementById("authError"),
+    cancel: document.getElementById("authCancel"),
+  };
+}
 
-  const password = window.prompt("Password:");
-  if (password === null) return false;
+export function closeLoginModal() {
+  const { modal, form, password, togglePassword, error } = getAuthModalElements();
+  if (!modal) return;
+  modal.style.display = "none";
+  if (form) form.reset();
+  if (password) password.type = "password";
+  if (togglePassword) togglePassword.checked = false;
+  if (error) error.style.display = "none";
+}
 
-  const token = window.btoa(`${username}:${password}`);
-  setAuthToken(token);
-  updateAuthUI();
+function openLoginModal() {
+  const { modal, username, error } = getAuthModalElements();
+  if (!modal) return false;
+  modal.style.display = "flex";
+  if (error) error.style.display = "none";
+  if (username) username.focus();
   return true;
+}
+
+export function initAuthModal() {
+  if (authModalInitialized) return;
+  const { modal, form, password, togglePassword, cancel, error } = getAuthModalElements();
+  if (!modal || !form || !password || !togglePassword || !cancel || !error) return;
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const usernameValue = document.getElementById("authUsername")?.value ?? "";
+    const passwordValue = document.getElementById("authPassword")?.value ?? "";
+    const token = window.btoa(`${usernameValue}:${passwordValue}`);
+    setAuthToken(token);
+    error.style.display = "none";
+    closeLoginModal();
+    updateAuthUI();
+  });
+
+  togglePassword.addEventListener("change", () => {
+    password.type = togglePassword.checked ? "text" : "password";
+  });
+
+  cancel.addEventListener("click", () => {
+    closeLoginModal();
+  });
+
+  modal.addEventListener("click", (event) => {
+    if (event.target && event.target.id === "authModal") closeLoginModal();
+  });
+
+  authModalInitialized = true;
+}
+
+export function login() {
+  if (isAuthenticated()) return true;
+  return openLoginModal();
 }
 
 export function logout() {
   setAuthToken("");
+  closeLoginModal();
   updateAuthUI();
 }
 

@@ -6,13 +6,14 @@ import { recipes } from "./state.js";
 import { populateTags, addTag, removeTag } from "./tags.js";
 import { addSection, addIngredient } from "./ingredients.js";
 import { showAddRecipe, closeModal, saveRecipe, deleteRecipe, editRecipe, saveEdit } from "./modal.js";
-import { login, logout, requireAuth, updateAuthUI } from "./auth.js";
+import { initAuthModal, login, logout, requireAuth, updateAuthUI } from "./auth.js";
 
 window.onload = () => {
   loadRecipes();
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  initAuthModal();
   updateAuthUI();
   loadRecipes();
 
