@@ -4,33 +4,64 @@
     "name": "Chipotle Chicken Bowl",
     "tags": ["high protein", "bowl"],
     "ingredients": [
-      "150g boneless, skinless chicken breast",
-      "1 diced chipotle pepper (or 1 tbsp chipotle purée)",
-      "1/2 tbsp chopped cilantro",
-      "1/2 tsp garlic powder",
-      "1/2 tsp onion powder",
-      "1/4 tsp paprika",
-      "salt and black pepper to taste",
-      "olive oil spray",
-      "1/2 cup cooked white rice",
-      "1/2 tbsp chopped cilantro (for rice)",
-      "juice from 1/2 lime",
-      "1/3 cup fire roasted corn",
-      "1/2 tsp elote seasoning",
-      "1/3 cup diced tomatoes",
-      "1/4 cup diced onion",
-      "1 tbsp diced jalapeño",
-      "1/2 tbsp cilantro",
-      "juice from 1/2 lime (for pico)",
-      "1/4 cup diced pineapple",
-      "1/4 cup diced mango",
-      "1 tbsp red onion",
-      "1/2 tbsp jalapeño",
-      "1/2 tbsp cilantro",
-      "1/4 tsp chile lime seasoning",
-      "1/2 cup shredded lettuce"
+      {
+        "title": "Chicken",
+        "items": [
+          "150g boneless, skinless chicken breast",
+          "1 diced chipotle pepper (or 1 tbsp chipotle purée)",
+          "1/2 tbsp chopped cilantro",
+          "1/2 tsp garlic powder",
+          "1/2 tsp onion powder",
+          "1/4 tsp paprika",
+          "salt and black pepper to taste"
+        ]
+      },
+      {
+        "title": "Cilantro Lime Rice",
+        "items": [
+          "1/2 cup cooked white rice",
+          "1/2 tbsp chopped cilantro",
+          "juice from 1/2 lime",
+          "salt to taste"
+        ]
+      },
+      {
+        "title": "Roasted Corn",
+        "items": [
+          "1/3 cup fire roasted corn",
+          "1/2 tsp elote seasoning"
+        ]
+      },
+      {
+        "title": "Pico de Gallo",
+        "items": [
+          "1/3 cup diced tomatoes",
+          "1/4 cup diced onion",
+          "1 tbsp diced jalapeño",
+          "1/2 tbsp cilantro",
+          "juice from 1/2 lime",
+          "salt and pepper to taste"
+        ]
+      },
+      {
+        "title": "Mango Salsa",
+        "items": [
+          "1/4 cup diced pineapple",
+          "1/4 cup diced mango",
+          "1 tbsp red onion",
+          "1/2 tbsp jalapeño",
+          "1/2 tbsp cilantro",
+          "1/4 tsp chile lime seasoning"
+        ]
+      },
+      {
+        "title": "Other",
+        "items": [
+          "1/2 cup shredded lettuce"
+        ]
+      }
     ],
-    "instructions": "Step 1: Make pico de gallo by combining tomatoes, onion, jalapeño, cilantro, lime juice, salt, and pepper.\nStep 2: Make mango salsa by mixing pineapple, mango, red onion, jalapeño, cilantro, lime juice, and chile lime seasoning.\nStep 3: Heat corn in skillet with olive oil spray and elote seasoning for 3–4 minutes.\nStep 4: Season chicken with chipotle pepper, cilantro, garlic powder, onion powder, paprika, salt, and pepper. Cook in skillet 3–4 minutes per side until fully cooked.\nStep 5: Mix cooked rice with cilantro, lime juice, and salt.\nStep 6: Assemble bowl with rice, chicken, corn, pico, mango salsa, and lettuce.",
+    "instructions": "Step 1: Make pico de gallo by combining tomatoes, onion, jalapeño, cilantro, lime juice, salt, and pepper.\nStep 2: Make mango salsa by mixing pineapple, mango, red onion, jalapeño, cilantro, lime juice, and chile lime seasoning.\nStep 3: Heat corn in skillet with olive oil spray and elote seasoning for 3–4 minutes.\nStep 4: Season chicken and cook 3–4 minutes per side until done.\nStep 5: Mix rice with cilantro, lime juice, and salt.\nStep 6: Assemble bowl.",
     "calories": 520,
     "protein": 45,
     "image": ""
@@ -40,34 +71,54 @@
     "name": "Honey Cilantro Lime Chicken and Roasted Corn Salad",
     "tags": ["high protein", "meal prep"],
     "ingredients": [
-      "1 lb chicken breast",
-      "1 tbsp Better Than Bouillon",
-      "juice of 1 lime",
-      "3 tbsp honey",
-      "1/4 cup cilantro",
-      "4 garlic cloves",
-      "1/2 tbsp soy sauce",
-      "chili lime seasoning",
-      "onion powder",
-      "paprika",
-      "salt and pepper",
-      "1 cup roasted corn",
-      "1 mini cucumber",
-      "3/4 cup cherry tomatoes",
-      "1/3 cup red onion",
-      "1/2 cup roasted red peppers",
-      "1/3 cup black beans",
-      "1 avocado",
-      "2 tbsp cilantro",
-      "1 tbsp rice vinegar",
-      "2 tbsp olive oil",
-      "2 tsp Italian seasoning",
-      "1 tsp elote seasoning",
-      "1 1/2 cups cooked basmati rice",
-      "2 tbsp cilantro (for rice)",
-      "juice of 1 lime (for rice)"
+      {
+        "title": "Chicken",
+        "items": [
+          "1 lb chicken breast",
+          "1 tbsp Better Than Bouillon",
+          "juice of 1 lime",
+          "3 tbsp honey",
+          "1/4 cup cilantro",
+          "4 garlic cloves",
+          "1/2 tbsp soy sauce",
+          "chili lime seasoning",
+          "onion powder",
+          "paprika",
+          "salt and pepper"
+        ]
+      },
+      {
+        "title": "Salad",
+        "items": [
+          "1 cup roasted corn",
+          "1 mini cucumber",
+          "3/4 cup cherry tomatoes",
+          "1/3 cup red onion",
+          "1/2 cup roasted red peppers",
+          "1/3 cup black beans",
+          "1 avocado",
+          "2 tbsp cilantro"
+        ]
+      },
+      {
+        "title": "Dressing",
+        "items": [
+          "1 tbsp rice vinegar",
+          "2 tbsp olive oil",
+          "2 tsp Italian seasoning",
+          "1 tsp elote seasoning"
+        ]
+      },
+      {
+        "title": "Rice",
+        "items": [
+          "1 1/2 cups cooked basmati rice",
+          "2 tbsp cilantro",
+          "juice of 1 lime"
+        ]
+      }
     ],
-    "instructions": "Step 1: Mix marinade with bouillon, lime juice, honey, cilantro, garlic, soy sauce, and seasonings. Coat chicken and marinate 10+ minutes.\nStep 2: Cook chicken 4–6 minutes per side until internal temp reaches 165°F.\nStep 3: Chop cucumber, tomatoes, onion, peppers, and avocado. Mix with corn, black beans, and cilantro.\nStep 4: Whisk vinegar, olive oil, Italian seasoning, and elote seasoning. Toss salad.\nStep 5: Mix rice with cilantro, lime juice, and salt.\nStep 6: Assemble bowl with rice, chicken, and salad.",
+    "instructions": "Step 1: Marinate chicken.\nStep 2: Cook chicken.\nStep 3: Combine salad ingredients.\nStep 4: Mix dressing and toss.\nStep 5: Mix rice.\nStep 6: Assemble bowl.",
     "calories": 550,
     "protein": 45,
     "image": ""
@@ -77,22 +128,44 @@
     "name": "Herb Butter Steak Bites, Mashed Potatoes, and Garlic Bread",
     "tags": ["high protein"],
     "ingredients": [
-      "1 lb sirloin steak tips",
-      "Worcestershire sauce",
-      "salt and pepper",
-      "steak seasoning",
-      "olive oil",
-      "2 tbsp butter",
-      "1/2 tbsp chives",
-      "1/2 tbsp parsley",
-      "1/2 tbsp Dijon mustard",
-      "2 tsp garlic",
-      "1 tsp lemon juice",
-      "1 mini ciabatta baguette",
-      "2 large russet potatoes",
-      "1/3 cup heavy cream"
+      {
+        "title": "Steak",
+        "items": [
+          "1 lb sirloin steak tips",
+          "Worcestershire sauce",
+          "salt and pepper",
+          "steak seasoning"
+        ]
+      },
+      {
+        "title": "Herb Butter",
+        "items": [
+          "2 tbsp butter",
+          "1/2 tbsp chives",
+          "1/2 tbsp parsley",
+          "1/2 tbsp Dijon mustard",
+          "2 tsp garlic",
+          "1 tsp lemon juice"
+        ]
+      },
+      {
+        "title": "Mashed Potatoes",
+        "items": [
+          "2 large russet potatoes",
+          "1/3 cup heavy cream",
+          "salt and pepper"
+        ]
+      },
+      {
+        "title": "Garlic Bread",
+        "items": [
+          "1 mini ciabatta baguette",
+          "butter",
+          "garlic"
+        ]
+      }
     ],
-    "instructions": "Step 1: Mix butter with herbs, Dijon, garlic, lemon juice, and spices.\nStep 2: Season steak and sear in skillet 2–3 minutes per side.\nStep 3: Toss steak in herb butter.\nStep 4: Slice baguette, spread butter, and bake at 400°F for 5–7 minutes.\nStep 5: Boil potatoes until tender, mash with cream, salt, and pepper.\nStep 6: Serve steak with potatoes and garlic bread.",
+    "instructions": "Cook steak. Make herb butter. Mash potatoes. Bake garlic bread. Serve together.",
     "calories": 700,
     "protein": 45,
     "image": ""
@@ -102,22 +175,43 @@
     "name": "Greek Chicken Bowl with Homemade Tzatziki",
     "tags": ["high protein", "bowl"],
     "ingredients": [
-      "chicken thighs",
-      "1 mini cucumber",
-      "1/3 cup Greek yogurt",
-      "1/4 cup dill",
-      "juice of 1/2 lemon",
-      "1/2 tbsp red wine vinegar",
-      "tomatoes",
-      "cucumber",
-      "red onion",
-      "roasted red peppers",
-      "basil",
-      "arugula",
-      "zucchini",
-      "naan bread"
+      {
+        "title": "Chicken",
+        "items": [
+          "chicken thighs",
+          "tzatziki marinade"
+        ]
+      },
+      {
+        "title": "Tzatziki",
+        "items": [
+          "1 mini cucumber",
+          "1/3 cup Greek yogurt",
+          "1/4 cup dill",
+          "juice of 1/2 lemon",
+          "1/2 tbsp red wine vinegar"
+        ]
+      },
+      {
+        "title": "Salad",
+        "items": [
+          "tomatoes",
+          "cucumber",
+          "red onion",
+          "roasted red peppers",
+          "basil"
+        ]
+      },
+      {
+        "title": "Base",
+        "items": [
+          "arugula",
+          "grilled zucchini",
+          "naan bread"
+        ]
+      }
     ],
-    "instructions": "Step 1: Grate cucumber and squeeze out moisture. Mix with yogurt, dill, lemon juice, vinegar, salt, and pepper.\nStep 2: Marinate chicken in tzatziki 15 minutes.\nStep 3: Cook chicken 5–6 minutes per side until done.\nStep 4: Mix chopped vegetables with basil, vinegar, lemon juice, salt, and pepper.\nStep 5: Grill zucchini.\nStep 6: Assemble bowl with arugula, chicken, tzatziki, salad, and naan.",
+    "instructions": "Make tzatziki. Marinate and cook chicken. Prepare salad. Assemble bowl.",
     "calories": 550,
     "protein": 40,
     "image": ""
@@ -127,23 +221,43 @@
     "name": "Teriyaki Mango Salmon Bowl",
     "tags": ["high protein", "bowl"],
     "ingredients": [
-      "4 oz salmon",
-      "1 tbsp teriyaki sauce",
-      "1/2 tbsp teriyaki sauce (extra)",
-      "1/2 tsp sesame seeds",
-      "green onion",
-      "1/2 cup cooked rice",
-      "1/2 tbsp cilantro",
-      "1/2 tbsp lime juice",
-      "1/2 cup mango",
-      "1/4 cup tomatoes",
-      "2 tbsp red onion",
-      "1 tbsp cilantro",
-      "1 tbsp lime juice",
-      "1/2 tsp chile lime seasoning",
-      "1/2 avocado"
+      {
+        "title": "Salmon",
+        "items": [
+          "4 oz salmon",
+          "1 tbsp teriyaki sauce",
+          "1/2 tbsp teriyaki sauce",
+          "1/2 tsp sesame seeds",
+          "green onion"
+        ]
+      },
+      {
+        "title": "Rice",
+        "items": [
+          "1/2 cup cooked rice",
+          "1/2 tbsp cilantro",
+          "1/2 tbsp lime juice"
+        ]
+      },
+      {
+        "title": "Mango Salsa",
+        "items": [
+          "1/2 cup mango",
+          "1/4 cup tomatoes",
+          "2 tbsp red onion",
+          "1 tbsp cilantro",
+          "1 tbsp lime juice",
+          "1/2 tsp chile lime seasoning"
+        ]
+      },
+      {
+        "title": "Other",
+        "items": [
+          "1/2 avocado"
+        ]
+      }
     ],
-    "instructions": "Step 1: Marinate salmon in teriyaki sauce for 5–30 minutes.\nStep 2: Air fry at 375°F for 12 minutes or bake at 400°F for 12–15 minutes.\nStep 3: Mix rice with cilantro, lime juice, and salt.\nStep 4: Combine mango, tomatoes, onion, cilantro, lime juice, and seasoning.\nStep 5: Assemble bowl with rice, salmon, mango salsa, and avocado.",
+    "instructions": "Cook salmon. Prepare rice and salsa. Assemble bowl.",
     "calories": 600,
     "protein": 38,
     "image": ""
