@@ -81,11 +81,23 @@ export function initAuthModal() {
     event.preventDefault();
     const usernameValue = document.getElementById("authUsername")?.value ?? "";
     const passwordValue = document.getElementById("authPassword")?.value ?? "";
+    if (!usernameValue || !passwordValue) {
+      error.textContent = "Username and password are required.";
+      error.style.display = "block";
+      return;
+    }
     const token = window.btoa(`${usernameValue}:${passwordValue}`);
     setAuthToken(token);
     error.style.display = "none";
     closeLoginModal();
     updateAuthUI();
+  });
+
+  form.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter") return;
+    if (event.target && event.target.tagName === "TEXTAREA") return;
+    event.preventDefault();
+    form.requestSubmit();
   });
 
   togglePassword.addEventListener("change", () => {
@@ -118,8 +130,8 @@ export function initAuthModal() {
 }
 
 export function login() {
-  if (isAuthenticated()) return true;
-  return openLoginModal();
+  if (isAuthenticated()) return;
+  openLoginModal();
 }
 
 export function logout() {
@@ -130,5 +142,6 @@ export function logout() {
 
 export function requireAuth() {
   if (isAuthenticated()) return true;
-  return login();
+  login();
+  return false;
 }
