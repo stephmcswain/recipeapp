@@ -78,7 +78,11 @@ async function withClient(fn) {
 }
 
 export async function handler(event) {
-  if (event.httpMethod === "OPTIONS") return json(204, {});
+  const method = String(
+    event.httpMethod || event.requestContext?.http?.method || ""
+  ).toUpperCase();
+
+  if (method === "OPTIONS") return json(204, {});
 
   return withClient(async (client) => {
     const base = "/.netlify/functions/recipes";
@@ -87,14 +91,14 @@ export async function handler(event) {
     const parts = suffix.split("/").filter(Boolean);
     const id = parts.length ? Number(parts[0]) : null;
 
-    if (event.httpMethod === "GET") {
+    if (method === "GET") {
       const { rows } = await client.query(
         "select * from recipes order by updated_at desc, created_at desc"
       );
       return json(200, rows.map(toClientRecipe));
     }
 
-    if (event.httpMethod === "POST") {
+    if (method === "POST") {
       const body = event.body ? JSON.parse(event.body) : {};
       const r = normalizeRecipe(body);
       if (!r.name) return json(400, { error: "Recipe name is required" });
@@ -145,7 +149,7 @@ export async function handler(event) {
       return json(200, toClientRecipe(rows[0]));
     }
 
-    if (event.httpMethod === "PUT") {
+    if (method === "PUT") {
       if (!id) return json(400, { error: "Missing id in path" });
       const body = event.body ? JSON.parse(event.body) : {};
       const r = normalizeRecipe({ ...body, id });
@@ -195,7 +199,7 @@ export async function handler(event) {
       return json(200, toClientRecipe(rows[0]));
     }
 
-    if (event.httpMethod === "DELETE") {
+    if (method === "DELETE") {
       if (!id) return json(400, { error: "Missing id in path" });
       await client.query("delete from recipes where id = $1", [id]);
       return json(204, {});

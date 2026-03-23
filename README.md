@@ -11,7 +11,7 @@ This app can run as a static site, but it also supports persisting recipes in a 
 
 In your Netlify site settings, add:
 
-- **`NETFLIFY_DATABASE_URL`**: your Neon pooled connection string (recommended). Example format:
+- **`NETLIFY_DATABASE_URL`**: your Neon pooled connection string (recommended). Example format:
   - `postgresql://USER:PASSWORD@HOST/DATABASE?sslmode=require`
 
 ## 3) Deploy

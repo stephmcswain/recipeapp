@@ -3,10 +3,19 @@ import { populateTags } from "./tags.js";
 import { render } from "./render.js";
 
 const API_URL = "/.netlify/functions/recipes";
+const LOCAL_RECIPES_KEY = "recipes-local";
 
 export function setRecipes(newRecipes) {
   recipes.length = 0;
   recipes.push(...newRecipes);
+}
+
+export function persistRecipesLocal() {
+  try {
+    localStorage.setItem(LOCAL_RECIPES_KEY, JSON.stringify(recipes));
+  } catch {
+    // Ignore storage failures (private mode/quota issues).
+  }
 }
 
 export async function loadRecipes() {
@@ -15,6 +24,7 @@ export async function loadRecipes() {
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     const data = await res.json();
     setRecipes(Array.isArray(data) ? data : []);
+    persistRecipesLocal();
     populateTags();
     render();
     return;
@@ -22,9 +32,25 @@ export async function loadRecipes() {
     // Fallback for local/offline usage.
   }
 
+  try {
+    const localRaw = localStorage.getItem(LOCAL_RECIPES_KEY);
+    if (localRaw) {
+      const localData = JSON.parse(localRaw);
+      if (Array.isArray(localData)) {
+        setRecipes(localData);
+        populateTags();
+        render();
+        return;
+      }
+    }
+  } catch {
+    // Ignore malformed local data and continue to static fallback.
+  }
+
   const res = await fetch("recipes.json");
   const data = await res.json();
   setRecipes(Array.isArray(data) ? data : []);
+  persistRecipesLocal();
   populateTags();
   render();
 }

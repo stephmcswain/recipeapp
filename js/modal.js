@@ -2,7 +2,7 @@ import { recipes } from "./state.js";
 import { render } from "./render.js";
 import { currentTags, populateTags, renderTags, setCurrentTags } from "./tags.js";
 import { addSection, collectIngredients } from "./ingredients.js";
-import { upsertRecipe, deleteRecipeDb } from "./data.js";
+import { upsertRecipe, deleteRecipeDb, persistRecipesLocal } from "./data.js";
 
 function ingredientsToEditText(ingredients) {
   if (!Array.isArray(ingredients) || ingredients.length === 0) return "";
@@ -260,6 +260,7 @@ export function saveEdit(id) {
       updated.image = e.target.result;
       const saved = await upsertRecipe(updated);
       recipes[index] = saved;
+      persistRecipesLocal();
       populateTags();
       render();
       closeModal();
@@ -271,6 +272,7 @@ export function saveEdit(id) {
   (async () => {
     const saved = await upsertRecipe(updated);
     recipes[index] = saved;
+    persistRecipesLocal();
     populateTags();
     render();
     closeModal();
@@ -305,32 +307,46 @@ export function saveRecipe() {
 
   const file = document.getElementById("newImage").files[0];
 
+  const mergeSavedRecipe = (saved) => {
+    const savedNumber = saved?.number;
+    const existingIndex = recipes.findIndex(r => String(r.number) === String(savedNumber));
+    if (existingIndex === -1) recipes.push(saved);
+    else recipes[existingIndex] = saved;
+    persistRecipesLocal();
+    populateTags();
+    render();
+    closeModal();
+  };
+
+  const saveWithFallback = async (recipe) => {
+    try {
+      const saved = await upsertRecipe(recipe);
+      mergeSavedRecipe(saved);
+    } catch {
+      // Keep local UX working even if API/database is unavailable.
+      mergeSavedRecipe(recipe);
+    }
+  };
+
   if (file) {
     const reader = new FileReader();
     reader.onload = async e => {
       newRecipe.image = e.target.result;
-      const saved = await upsertRecipe(newRecipe);
-      recipes.push(saved);
-      populateTags();
-      render();
+      await saveWithFallback(newRecipe);
     };
     reader.readAsDataURL(file);
   } else {
     (async () => {
-      const saved = await upsertRecipe(newRecipe);
-      recipes.push(saved);
-      populateTags();
-      render();
+      await saveWithFallback(newRecipe);
     })();
   }
-
-  closeModal();
 }
 
 export function deleteRecipe(id) {
   const filtered = recipes.filter(r => r.number !== id);
   recipes.length = 0;
   recipes.push(...filtered);
+  persistRecipesLocal();
   deleteRecipeDb(id).catch(() => {});
   populateTags();
   render();

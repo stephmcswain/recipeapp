@@ -1,4 +1,4 @@
-import { loadRecipes } from "./data.js";
+import { loadRecipes, persistRecipesLocal } from "./data.js";
 import { exportToFile } from "./data.js";
 import { upsertRecipe } from "./data.js";
 import { render } from "./render.js";
@@ -56,6 +56,7 @@ export function importRecipes(event) {
     }
 
     populateTags();
+    persistRecipesLocal();
     render();
   };
 
