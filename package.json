@@ -4,6 +4,8 @@
   "type": "module",
   "dependencies": {
     "pg": "^8.13.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^24.4.1"
   }
 }
-
