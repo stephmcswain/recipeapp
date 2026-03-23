@@ -1,5 +1,5 @@
 [build]
-  publish = "recipes-app"
+  publish = "."
   functions = "netlify/functions"
 
 [functions]

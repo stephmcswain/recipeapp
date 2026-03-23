@@ -23,11 +23,42 @@ export async function loadRecipes() {
     const res = await fetch(API_URL);
     if (!res.ok) throw new Error(`API error: ${res.status}`);
     const data = await res.json();
-    setRecipes(Array.isArray(data) ? data : []);
-    persistRecipesLocal();
-    populateTags();
-    render();
-    return;
+    const apiRecipes = Array.isArray(data) ? data : [];
+    if (apiRecipes.length > 0) {
+      setRecipes(apiRecipes);
+      persistRecipesLocal();
+      populateTags();
+      render();
+      return;
+    }
+
+    // API is available but empty; seed from starter file.
+    const seedRes = await fetch("recipes.json");
+    const seedData = await seedRes.json();
+    const seedRecipes = Array.isArray(seedData) ? seedData : [];
+    if (seedRecipes.length > 0) {
+      await Promise.all(
+        seedRecipes.map(recipe =>
+          fetch(API_URL, {
+            method: "POST",
+            headers: { "content-type": "application/json" },
+            body: JSON.stringify(recipe),
+          }).catch(() => null)
+        )
+      );
+
+      const refreshed = await fetch(API_URL);
+      if (!refreshed.ok) throw new Error(`API error: ${refreshed.status}`);
+      const refreshedData = await refreshed.json();
+      const refreshedRecipes = Array.isArray(refreshedData) ? refreshedData : [];
+      if (refreshedRecipes.length > 0) {
+        setRecipes(refreshedRecipes);
+        persistRecipesLocal();
+        populateTags();
+        render();
+        return;
+      }
+    }
   } catch {
     // Fallback for local/offline usage.
   }
