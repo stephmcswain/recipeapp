@@ -1,4 +1,4 @@
-function addIngredient(sectionId) {
+export function addIngredient(sectionId) {
   const section = document.querySelector(`[data-id="${sectionId}"]`);
   const container = section.querySelector(".ingredients");
 
@@ -13,7 +13,7 @@ function addIngredient(sectionId) {
   container.appendChild(row);
 }
 
-function collectIngredients() {
+export function collectIngredients() {
   const sections = document.querySelectorAll(".section-card");
 
   return Array.from(sections).map(section => {
@@ -27,7 +27,7 @@ function collectIngredients() {
   }).filter(s => s.items.length);
 }
 
-function addSection() {
+export function addSection() {
   const container = document.getElementById("ingredientSections");
 
   const id = Date.now();

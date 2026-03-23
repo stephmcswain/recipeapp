@@ -12,6 +12,11 @@ export function populateTags() {
 
 export let currentTags = [];
 
+export function setCurrentTags(tags) {
+  currentTags.length = 0;
+  currentTags.push(...tags);
+}
+
 export function addTag() {
   const input = document.getElementById("tagInput");
   const value = input.value.trim();

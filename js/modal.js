@@ -1,4 +1,22 @@
 import { recipes } from "./state.js";
+import { render } from "./render.js";
+import { currentTags, populateTags, renderTags, setCurrentTags } from "./tags.js";
+import { addSection, collectIngredients } from "./ingredients.js";
+import { upsertRecipe, deleteRecipeDb } from "./data.js";
+
+function ingredientsToEditText(ingredients) {
+  if (!Array.isArray(ingredients) || ingredients.length === 0) return "";
+
+  // Section format: [{ title, items: [] }]
+  if (typeof ingredients[0] === "object") {
+    return ingredients
+      .flatMap(section => (section?.items || []).map(String))
+      .join("\n");
+  }
+
+  // Old format: ["item", "item"]
+  return ingredients.map(String).join("\n");
+}
 
 // EDIT / DELETE
 export function openRecipe(id) {
@@ -63,7 +81,7 @@ if (Array.isArray(r.ingredients) && r.ingredients.length > 0) {
 
 // ADD MODAL
 export function showAddRecipe() {
-  currentTags = [];
+  setCurrentTags([]);
   const content = document.getElementById("modalContent");
 
   content.innerHTML = `
@@ -114,9 +132,9 @@ export function showAddRecipe() {
 }
 
 export function editRecipe(id) {
-  currentTags = [...(r.tags || [])];
-  renderTags();
   const r = recipes.find(x => x.number === id);
+  setCurrentTags([...(r?.tags || [])]);
+  renderTags();
   const content = document.getElementById("modalContent");
 
   content.innerHTML = `
@@ -137,7 +155,7 @@ export function editRecipe(id) {
 
     <div class="form-group">
       <label>Ingredients (one per line)</label>
-      <textarea id="editIngredients" rows="5">${(r.ingredients || []).join("\n")}</textarea>
+      <textarea id="editIngredients" rows="5">${ingredientsToEditText(r.ingredients)}</textarea>
     </div>
 
     <div class="form-group">
@@ -206,23 +224,82 @@ export function editRecipe(id) {
   `;
 }
 
+export function saveEdit(id) {
+  const index = recipes.findIndex(r => r.number === id);
+  if (index === -1) return;
+
+  const updated = {
+    ...recipes[index],
+    name: document.getElementById("editName").value,
+    tags: document
+      .getElementById("editTags")
+      .value.split(",")
+      .map(t => t.trim())
+      .filter(Boolean),
+    ingredients: document
+      .getElementById("editIngredients")
+      .value.split("\n")
+      .map(i => i.trim())
+      .filter(Boolean),
+    instructions: document.getElementById("editInstructions").value,
+    calories: parseInt(document.getElementById("editCalories").value) || 0,
+    protein: parseInt(document.getElementById("editProtein").value) || 0,
+    fiber: parseInt(document.getElementById("editFiber").value) || 0,
+    carbs: parseInt(document.getElementById("editCarbs").value) || 0,
+    fat: parseInt(document.getElementById("editFat").value) || 0,
+    sugar: parseInt(document.getElementById("editSugar").value) || 0,
+    sodium: parseInt(document.getElementById("editSodium").value) || 0,
+    cholesterol: parseInt(document.getElementById("editCholesterol").value) || 0,
+    saturated: parseInt(document.getElementById("editSaturated").value) || 0,
+  };
+
+  const file = document.getElementById("editImage").files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = async e => {
+      updated.image = e.target.result;
+      const saved = await upsertRecipe(updated);
+      recipes[index] = saved;
+      populateTags();
+      render();
+      closeModal();
+    };
+    reader.readAsDataURL(file);
+    return;
+  }
+
+  (async () => {
+    const saved = await upsertRecipe(updated);
+    recipes[index] = saved;
+    populateTags();
+    render();
+    closeModal();
+  })();
+}
+
 // SAVE NEW
 export function saveRecipe() {
+  const numberValue = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return 0;
+    return parseInt(el.value, 10) || 0;
+  };
+
   const newRecipe = {
     number: Date.now(),
     name: document.getElementById("newName").value,
     tags: currentTags,
     ingredients: collectIngredients(),
     instructions: document.getElementById("newInstructions").value,
-    calories: parseInt(document.getElementById("newCalories").value)||0,
-    protein: parseInt(document.getElementById("newProtein").value)||0,
-    fiber: parseInt(document.getElementById("newFiber").value)||0,
-    carbs: parseInt(document.getElementById("newCarbs").value)||0,
-    fat: parseInt(document.getElementById("newFat").value)||0,
-    sugar: parseInt(document.getElementById("newSugar").value)||0,
-    sodium: parseInt(document.getElementById("newSodium").value)||0,
-    cholesterol: parseInt(document.getElementById("newCholesterol").value)||0,
-    saturated: parseInt(document.getElementById("newSaturated").value)||0,
+    calories: numberValue("newCalories"),
+    protein: numberValue("newProtein"),
+    fiber: numberValue("newFiber"),
+    carbs: numberValue("newCarbs"),
+    fat: numberValue("newFat"),
+    sugar: numberValue("newSugar"),
+    sodium: numberValue("newSodium"),
+    cholesterol: numberValue("newCholesterol"),
+    saturated: numberValue("newSaturated"),
     image: ""
   };
 
@@ -230,15 +307,21 @@ export function saveRecipe() {
 
   if (file) {
     const reader = new FileReader();
-    reader.onload = e => {
+    reader.onload = async e => {
       newRecipe.image = e.target.result;
-      recipes.push(newRecipe);
+      const saved = await upsertRecipe(newRecipe);
+      recipes.push(saved);
+      populateTags();
       render();
     };
     reader.readAsDataURL(file);
   } else {
-    recipes.push(newRecipe);
-    render();
+    (async () => {
+      const saved = await upsertRecipe(newRecipe);
+      recipes.push(saved);
+      populateTags();
+      render();
+    })();
   }
 
   closeModal();
@@ -248,6 +331,8 @@ export function deleteRecipe(id) {
   const filtered = recipes.filter(r => r.number !== id);
   recipes.length = 0;
   recipes.push(...filtered);
+  deleteRecipeDb(id).catch(() => {});
+  populateTags();
   render();
   closeModal();
 }
