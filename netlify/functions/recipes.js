@@ -114,17 +114,21 @@ export async function handler(event) {
   const method = String(
     event.httpMethod || event.requestContext?.http?.method || ""
   ).toUpperCase();
+  const base = "/.netlify/functions/recipes";
+  const path = event.path || "";
+  const suffix = path.startsWith(base) ? path.slice(base.length) : "";
+  const parts = suffix.split("/").filter(Boolean);
 
   if (method === "OPTIONS") return json(204, {});
+  if (method === "GET" && parts[0] === "auth") {
+    if (!isAuthorized(event)) return json(401, { error: "Unauthorized" });
+    return json(200, { ok: true });
+  }
   if (isWriteMethod(method) && !isAuthorized(event)) {
     return json(401, { error: "Unauthorized" });
   }
 
   return withClient(async (client) => {
-    const base = "/.netlify/functions/recipes";
-    const path = event.path || "";
-    const suffix = path.startsWith(base) ? path.slice(base.length) : "";
-    const parts = suffix.split("/").filter(Boolean);
     const id = parts.length ? Number(parts[0]) : null;
 
     if (method === "GET") {

@@ -12,6 +12,33 @@
 
 <body>
 
+<section id="authPage" class="auth-page">
+  <div class="auth-card">
+    <h2>🔐 Recipe App Login</h2>
+    <form id="authForm">
+      <div class="form-group">
+        <label for="authUsername">Username</label>
+        <input id="authUsername" autocomplete="username" required>
+      </div>
+      <div class="form-group">
+        <label for="authPassword">Password</label>
+        <input id="authPassword" type="password" autocomplete="current-password" required>
+      </div>
+      <div class="form-group" style="margin-top:-6px;">
+        <label style="display:flex; align-items:center; gap:6px;">
+          <input id="authTogglePassword" type="checkbox" style="width:auto; padding:0;">
+          Show password
+        </label>
+      </div>
+      <p id="authError" style="display:none; color:#b91c1c; margin:0 0 8px 0;">Login failed. Try again.</p>
+      <div class="modal-actions">
+        <button type="submit">Login</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<div id="appRoot" style="display:none;">
 <header>
   <h2>🍽️ My Recipes</h2>
 
@@ -40,7 +67,6 @@
     <button onclick="saveToFile()">💾 Export Recipes</button>
     <button data-auth-required="true" onclick="document.getElementById('importFile').click()">📂 Import Recipes</button>
     <input type="file" id="importFile" style="display:none" onchange="importRecipes(event)">
-    <button id="loginBtn" onclick="login()">🔐 Login</button>
     <button id="logoutBtn" onclick="logout()" style="display:none">🚪 Logout</button>
   </div>
 </header>
@@ -50,32 +76,6 @@
 <div class="modal" id="modal">
   <div class="modal-content" id="modalContent"></div>
 </div>
-
-<div class="modal" id="authModal">
-  <div class="modal-content">
-    <h2>🔐 Login</h2>
-    <form id="authForm">
-      <div class="form-group">
-        <label for="authUsername">Username</label>
-        <input id="authUsername" autocomplete="username" required>
-      </div>
-      <div class="form-group">
-        <label for="authPassword">Password</label>
-        <input id="authPassword" type="password" autocomplete="current-password" required>
-      </div>
-      <div class="form-group" style="margin-top:-6px;">
-        <label style="display:flex; align-items:center; gap:6px;">
-          <input id="authTogglePassword" type="checkbox" style="width:auto; padding:0;">
-          Show password
-        </label>
-      </div>
-      <p id="authError" style="display:none; color:#b91c1c; margin:0 0 8px 0;">Login failed. Try again.</p>
-      <div class="modal-actions">
-        <button type="submit">Login</button>
-        <button type="button" id="authCancel" class="secondary-btn">Cancel</button>
-      </div>
-    </form>
-  </div>
 </div>
 
 </body>

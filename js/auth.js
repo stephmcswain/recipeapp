@@ -1,5 +1,5 @@
 const AUTH_STORAGE_KEY = "recipes-auth-token";
-let authModalInitialized = false;
+const AUTH_CHECK_URL = "/.netlify/functions/recipes/auth";
 
 function setAuthToken(token) {
   try {
@@ -30,67 +30,57 @@ export function getAuthHeaders() {
 
 export function updateAuthUI() {
   const loggedIn = isAuthenticated();
-  const guarded = document.querySelectorAll("[data-auth-required='true']");
-  guarded.forEach((el) => {
-    el.style.display = loggedIn ? "" : "none";
-  });
-
-  const loginBtn = document.getElementById("loginBtn");
+  const authPage = document.getElementById("authPage");
+  const appRoot = document.getElementById("appRoot");
   const logoutBtn = document.getElementById("logoutBtn");
-  if (loginBtn) loginBtn.style.display = loggedIn ? "none" : "";
+
+  if (authPage) authPage.style.display = loggedIn ? "none" : "grid";
+  if (appRoot) appRoot.style.display = loggedIn ? "block" : "none";
   if (logoutBtn) logoutBtn.style.display = loggedIn ? "" : "none";
 }
 
-function getAuthModalElements() {
-  return {
-    modal: document.getElementById("authModal"),
-    form: document.getElementById("authForm"),
-    username: document.getElementById("authUsername"),
-    password: document.getElementById("authPassword"),
-    togglePassword: document.getElementById("authTogglePassword"),
-    error: document.getElementById("authError"),
-    cancel: document.getElementById("authCancel"),
-  };
+async function verifyToken(token) {
+  const res = await fetch(AUTH_CHECK_URL, {
+    method: "GET",
+    headers: { authorization: `Basic ${token}` },
+  });
+  return res.ok;
 }
 
-export function closeLoginModal() {
-  const { modal, form, password, togglePassword, error } = getAuthModalElements();
-  if (!modal) return;
-  modal.style.display = "none";
-  if (form) form.reset();
-  if (password) password.type = "password";
-  if (togglePassword) togglePassword.checked = false;
-  if (error) error.style.display = "none";
-}
+export function initAuthPage(onLoginSuccess) {
+  const form = document.getElementById("authForm");
+  const username = document.getElementById("authUsername");
+  const password = document.getElementById("authPassword");
+  const togglePassword = document.getElementById("authTogglePassword");
+  const error = document.getElementById("authError");
+  if (!form || !username || !password || !togglePassword || !error) return;
 
-function openLoginModal() {
-  const { modal, username, error } = getAuthModalElements();
-  if (!modal) return false;
-  modal.style.display = "flex";
-  if (error) error.style.display = "none";
-  if (username) username.focus();
-  return true;
-}
-
-export function initAuthModal() {
-  if (authModalInitialized) return;
-  const { modal, form, password, togglePassword, cancel, error } = getAuthModalElements();
-  if (!modal || !form || !password || !togglePassword || !cancel || !error) return;
-
-  form.addEventListener("submit", (event) => {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const usernameValue = document.getElementById("authUsername")?.value ?? "";
-    const passwordValue = document.getElementById("authPassword")?.value ?? "";
+    const usernameValue = username.value.trim();
+    const passwordValue = password.value;
     if (!usernameValue || !passwordValue) {
       error.textContent = "Username and password are required.";
       error.style.display = "block";
       return;
     }
+
     const token = window.btoa(`${usernameValue}:${passwordValue}`);
+    const valid = await verifyToken(token).catch(() => false);
+    if (!valid) {
+      setAuthToken("");
+      error.textContent = "Invalid username or password.";
+      error.style.display = "block";
+      return;
+    }
+
     setAuthToken(token);
     error.style.display = "none";
-    closeLoginModal();
+    form.reset();
+    password.type = "password";
+    togglePassword.checked = false;
     updateAuthUI();
+    if (typeof onLoginSuccess === "function") onLoginSuccess();
   });
 
   form.addEventListener("keydown", (event) => {
@@ -104,44 +94,14 @@ export function initAuthModal() {
     password.type = togglePassword.checked ? "text" : "password";
   });
 
-  cancel.addEventListener("click", () => {
-    closeLoginModal();
-  });
-
-  modal.addEventListener("click", (event) => {
-    if (event.target && event.target.id === "authModal") closeLoginModal();
-  });
-
-  document.addEventListener("keydown", (event) => {
-    const modalVisible = modal.style.display === "flex";
-    if (event.key === "Escape" && modalVisible) {
-      closeLoginModal();
-      return;
-    }
-
-    const loginShortcut = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "l";
-    if (loginShortcut && !isAuthenticated()) {
-      event.preventDefault();
-      openLoginModal();
-    }
-  });
-
-  authModalInitialized = true;
-}
-
-export function login() {
-  if (isAuthenticated()) return;
-  openLoginModal();
+  username.focus();
 }
 
 export function logout() {
   setAuthToken("");
-  closeLoginModal();
   updateAuthUI();
 }
 
 export function requireAuth() {
-  if (isAuthenticated()) return true;
-  login();
-  return false;
+  return isAuthenticated();
 }
