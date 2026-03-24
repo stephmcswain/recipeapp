@@ -20,6 +20,87 @@ body {
   padding: 20px;
 }
 
+.home-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.home-card {
+  width: min(680px, 92vw);
+  background: var(--card);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  text-align: left;
+}
+
+.home-card h1 {
+  margin: 0 0 10px;
+}
+
+.home-intro {
+  margin: 0;
+  color: var(--subtle);
+}
+
+.home-cta {
+  margin: 18px 0 8px;
+}
+
+.portfolio-section {
+  margin-top: 20px;
+}
+
+.portfolio-section h2 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+
+.portfolio-section p {
+  margin: 0;
+}
+
+.project-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.project-card h3 {
+  margin: 0 0 8px;
+}
+
+.contact-links {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.contact-links a {
+  text-decoration: none;
+  background: var(--accent-soft);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 0.9rem;
+}
+
+.contact-note {
+  margin-top: 10px;
+  color: var(--subtle);
+  font-size: 0.9rem;
+}
+
 .auth-card {
   width: min(420px, 92vw);
   background: var(--card);

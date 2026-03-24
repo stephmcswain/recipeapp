@@ -6,12 +6,15 @@ import { recipes } from "./state.js";
 import { populateTags, addTag, removeTag } from "./tags.js";
 import { addSection, addIngredient } from "./ingredients.js";
 import { showAddRecipe, closeModal, saveRecipe, deleteRecipe, editRecipe, saveEdit } from "./modal.js";
-import { initAuthPage, isAuthenticated, logout, requireAuth, updateAuthUI } from "./auth.js";
+import { initAuthPage, isAuthenticated, logout, requireAuth, showHomePage, showLoginPage, updateAuthUI } from "./auth.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   initAuthPage(() => {
     loadRecipes();
   });
+  if (!isAuthenticated()) {
+    showHomePage();
+  }
   updateAuthUI();
   if (isAuthenticated()) {
     loadRecipes();
@@ -54,6 +57,8 @@ window.removeTag = removeTag;
 window.addSection = addSection;
 window.addIngredient = addIngredient;
 window.logout = logout;
+window.showLoginPage = showLoginPage;
+window.showHomePage = showHomePage;
 
 // IMPORT + MERGE
 export function importRecipes(event) {

@@ -1,5 +1,6 @@
 const AUTH_STORAGE_KEY = "recipes-auth-token";
 const AUTH_CHECK_URL = "/.netlify/functions/recipes/auth";
+let currentView = "home";
 
 function setAuthToken(token) {
   try {
@@ -30,12 +31,18 @@ export function getAuthHeaders() {
 
 export function updateAuthUI() {
   const loggedIn = isAuthenticated();
+  const homePage = document.getElementById("homePage");
   const authPage = document.getElementById("authPage");
   const appRoot = document.getElementById("appRoot");
   const logoutBtn = document.getElementById("logoutBtn");
 
-  if (authPage) authPage.style.display = loggedIn ? "none" : "grid";
-  if (appRoot) appRoot.style.display = loggedIn ? "block" : "none";
+  if (loggedIn) {
+    currentView = "app";
+  }
+
+  if (homePage) homePage.style.display = currentView === "home" ? "grid" : "none";
+  if (authPage) authPage.style.display = currentView === "login" ? "grid" : "none";
+  if (appRoot) appRoot.style.display = currentView === "app" ? "block" : "none";
   if (logoutBtn) logoutBtn.style.display = loggedIn ? "" : "none";
 }
 
@@ -75,6 +82,7 @@ export function initAuthPage(onLoginSuccess) {
     }
 
     setAuthToken(token);
+    currentView = "app";
     error.style.display = "none";
     form.reset();
     password.type = "password";
@@ -97,8 +105,27 @@ export function initAuthPage(onLoginSuccess) {
   username.focus();
 }
 
+export function showLoginPage() {
+  if (isAuthenticated()) {
+    currentView = "app";
+  } else {
+    currentView = "login";
+  }
+  updateAuthUI();
+}
+
+export function showHomePage() {
+  if (isAuthenticated()) {
+    currentView = "app";
+  } else {
+    currentView = "home";
+  }
+  updateAuthUI();
+}
+
 export function logout() {
   setAuthToken("");
+  currentView = "home";
   updateAuthUI();
 }
 
