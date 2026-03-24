@@ -2,10 +2,12 @@ import { recipes } from "./state.js";
 
 // TAGS
 export function populateTags() {
+  const select = document.getElementById("filterTag");
+  if (!select) return;
+
   const tagSet = new Set();
   recipes.forEach(r => (r.tags||[]).forEach(t => tagSet.add(t.trim())));
 
-  const select = document.getElementById("filterTag");
   select.innerHTML = `<option value="all">All Tags</option>` +
     [...tagSet].map(t => `<option value="${t}">${t}</option>`).join("");
 }

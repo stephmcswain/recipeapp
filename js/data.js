@@ -19,75 +19,81 @@ export function persistRecipesLocal() {
   }
 }
 
-export async function loadRecipes() {
-  try {
-    const res = await fetch(API_URL);
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
-    const data = await res.json();
-    const apiRecipes = Array.isArray(data) ? data : [];
-    if (apiRecipes.length > 0) {
-      setRecipes(apiRecipes);
-      persistRecipesLocal();
-      populateTags();
-      render();
-      return;
-    }
-
-    // API is available but empty; seed from starter file.
-    const seedRes = await fetch("recipes.json");
-    const seedData = await seedRes.json();
-    const seedRecipes = Array.isArray(seedData) ? seedData : [];
-    if (seedRecipes.length > 0) {
-      await Promise.all(
-        seedRecipes.map(recipe =>
-          fetch(API_URL, {
-            method: "POST",
-            headers: {
-              "content-type": "application/json",
-              ...getAuthHeaders(),
-            },
-            body: JSON.stringify(recipe),
-          }).catch(() => null)
-        )
-      );
-
-      const refreshed = await fetch(API_URL);
-      if (!refreshed.ok) throw new Error(`API error: ${refreshed.status}`);
-      const refreshedData = await refreshed.json();
-      const refreshedRecipes = Array.isArray(refreshedData) ? refreshedData : [];
-      if (refreshedRecipes.length > 0) {
-        setRecipes(refreshedRecipes);
-        persistRecipesLocal();
-        populateTags();
-        render();
-        return;
-      }
-    }
-  } catch {
-    // Fallback for local/offline usage.
-  }
-
-  try {
-    const localRaw = localStorage.getItem(LOCAL_RECIPES_KEY);
-    if (localRaw) {
-      const localData = JSON.parse(localRaw);
-      if (Array.isArray(localData)) {
-        setRecipes(localData);
-        populateTags();
-        render();
-        return;
-      }
-    }
-  } catch {
-    // Ignore malformed local data and continue to static fallback.
-  }
-
-  const res = await fetch("recipes.json");
-  const data = await res.json();
-  setRecipes(Array.isArray(data) ? data : []);
+function applyRecipesAndRender(list) {
+  setRecipes(Array.isArray(list) ? list : []);
   persistRecipesLocal();
   populateTags();
   render();
+}
+
+export async function loadRecipes() {
+  try {
+    try {
+      const res = await fetch(API_URL);
+      if (!res.ok) throw new Error(`API error: ${res.status}`);
+      const data = await res.json();
+      const apiRecipes = Array.isArray(data) ? data : [];
+      if (apiRecipes.length > 0) {
+        applyRecipesAndRender(apiRecipes);
+        return;
+      }
+
+      // API is available but empty; seed from starter file.
+      const seedRes = await fetch("recipes.json");
+      if (!seedRes.ok) throw new Error(`Seed fetch failed: ${seedRes.status}`);
+      const seedData = await seedRes.json();
+      const seedRecipes = Array.isArray(seedData) ? seedData : [];
+      if (seedRecipes.length > 0) {
+        await Promise.all(
+          seedRecipes.map(recipe =>
+            fetch(API_URL, {
+              method: "POST",
+              headers: {
+                "content-type": "application/json",
+                ...getAuthHeaders(),
+              },
+              body: JSON.stringify(recipe),
+            }).catch(() => null)
+          )
+        );
+
+        const refreshed = await fetch(API_URL);
+        if (!refreshed.ok) throw new Error(`API error: ${refreshed.status}`);
+        const refreshedData = await refreshed.json();
+        const refreshedRecipes = Array.isArray(refreshedData) ? refreshedData : [];
+        if (refreshedRecipes.length > 0) {
+          applyRecipesAndRender(refreshedRecipes);
+          return;
+        }
+      }
+    } catch {
+      // Fallback for local/offline usage.
+    }
+
+    try {
+      const localRaw = localStorage.getItem(LOCAL_RECIPES_KEY);
+      if (localRaw) {
+        const localData = JSON.parse(localRaw);
+        if (Array.isArray(localData) && localData.length > 0) {
+          applyRecipesAndRender(localData);
+          return;
+        }
+      }
+    } catch {
+      // Ignore malformed local data and continue to static fallback.
+    }
+
+    try {
+      const res = await fetch("recipes.json");
+      if (!res.ok) throw new Error(`recipes.json: ${res.status}`);
+      const data = await res.json();
+      applyRecipesAndRender(Array.isArray(data) ? data : []);
+    } catch {
+      applyRecipesAndRender([]);
+    }
+  } catch {
+    applyRecipesAndRender([]);
+  }
 }
 
 export async function upsertRecipe(recipe) {

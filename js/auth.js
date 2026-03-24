@@ -88,7 +88,12 @@ export function initAuthPage(onLoginSuccess) {
     password.type = "password";
     togglePassword.checked = false;
     updateAuthUI();
-    if (typeof onLoginSuccess === "function") onLoginSuccess();
+    // Defer until after #appRoot is shown so recipe UI DOM is laid out (fixes empty list on first login).
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (typeof onLoginSuccess === "function") onLoginSuccess();
+      });
+    });
   });
 
   form.addEventListener("keydown", (event) => {

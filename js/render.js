@@ -3,12 +3,19 @@ import { openRecipe } from "./modal.js";
 
 // RENDER
 export function render() {
-  let search = document.getElementById("search").value.toLowerCase();
-  let sort = document.getElementById("sortSelect").value;
-  let filterTag = document.getElementById("filterTag").value;
+  const searchEl = document.getElementById("search");
+  const sortEl = document.getElementById("sortSelect");
+  const filterEl = document.getElementById("filterTag");
+  const container = document.getElementById("recipes");
+  if (!searchEl || !sortEl || !filterEl || !container) return;
+
+  let search = String(searchEl.value || "").toLowerCase();
+  let sort = sortEl.value;
+  let filterTag = filterEl.value;
 
   let filtered = recipes.filter(r => {
-    const matchesSearch = r.name.toLowerCase().includes(search);
+    const name = String(r.name || "");
+    const matchesSearch = name.toLowerCase().includes(search);
     const matchesTag = filterTag === "all" || (r.tags || []).includes(filterTag);
     return matchesSearch && matchesTag;
   });
@@ -24,7 +31,6 @@ export function render() {
   if(sort === "cholesterol") filtered.sort((a,b)=>(b.cholesterol||0)-(a.cholesterol||0));
   if(sort === "saturated") filtered.sort((a,b)=>(b.saturated||0)-(a.saturated||0));
 
-  const container = document.getElementById("recipes");
   container.innerHTML = "";
 
   filtered.forEach(r => {
