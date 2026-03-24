@@ -125,7 +125,7 @@ export function showHomePage() {
 
 export function logout() {
   setAuthToken("");
-  currentView = "home";
+  currentView = "login";
   updateAuthUI();
 }
 

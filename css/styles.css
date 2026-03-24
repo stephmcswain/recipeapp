@@ -7,10 +7,15 @@
   --subtle: #6b7280;
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   font-family: 'Poppins', sans-serif;
   margin: 0;
   background: var(--bg);
+  color: var(--text);
 }
 
 .auth-page {
@@ -126,6 +131,7 @@ input, button, select {
   padding: 10px;
   border-radius: 12px;
   border: 1px solid #ddd;
+  font: inherit;
 }
 
 button {
@@ -178,6 +184,7 @@ button {
   background: white;
   padding: 20px;
   width: 500px;
+  max-width: calc(100vw - 24px);
   max-height: 85%;
   overflow-y: auto;
   border-radius: 20px;
@@ -263,4 +270,93 @@ button {
 .tag-pill span {
   cursor: pointer;
   font-weight: bold;
+}
+
+@media (max-width: 900px) {
+  .controls > input,
+  .controls > select {
+    flex: 1 1 220px;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-page,
+  .auth-page {
+    padding: 12px;
+    align-items: start;
+  }
+
+  .home-card,
+  .auth-card {
+    width: 100%;
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .home-card h1 {
+    font-size: 1.5rem;
+  }
+
+  .contact-links a {
+    width: 100%;
+    text-align: center;
+  }
+
+  header {
+    position: static;
+    padding: 12px;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .controls > input,
+  .controls > select,
+  .controls > button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .card {
+    border-radius: 14px;
+  }
+
+  .modal {
+    align-items: flex-end;
+  }
+
+  .modal-content {
+    width: 100%;
+    max-width: 100%;
+    max-height: 92vh;
+    border-radius: 16px 16px 0 0;
+    padding: 14px;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .modal-actions button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ingredient-row {
+    flex-direction: column;
+  }
 }
